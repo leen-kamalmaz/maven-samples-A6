@@ -13,7 +13,7 @@ pipeline {
             }
         }
 
-        stage('Identify Bug-Inducing Commit') {
+        stage('Finding Bug-Induced Release') {
             steps {
                 script {
                     // initialize git bisect
