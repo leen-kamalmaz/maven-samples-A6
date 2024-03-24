@@ -2,44 +2,41 @@ pipeline {
     agent any
 
     tools { 
-        maven 'DHT_MVN' 
-        jdk 'DHT_SENSE' 
+        maven 'Leen_Maven' 
+        jdk 'Leen_JDK' 
     }
 
     stages {
         stage('Check out') {
             steps {
-                // Assuming the use of a parameter or hardcoded value for the repository
-                git(url: 'https://github.com/dhetong/maven-samples-A6.git', branch: 'master')
+                git(url: 'https://github.com/leen-kamalmaz/maven-samples-A6', branch: 'master')
             }
         }
 
         stage('Identify Bug-Inducing Commit') {
             steps {
                 script {
-                    // Initialize git bisect
+                    // initialize git bisect
                     sh 'git bisect start'
                     
-                    // Mark the known good and bad commits
-                    // Replace <good_commit_hash> and <bad_commit_hash> with actual values
-                    sh 'git bisect good <good_commit_hash>'
-                    sh 'git bisect bad <bad_commit_hash>'
+                    // mark the known good and bad commits
+                    sh 'git bisect good 98ac319c0cff47b4d39a1a7b61b4e195cfa231e5'
+                    sh 'git bisect bad 198644632661c67b6c32f59e9047c11a70685e15'
 
-                    // Automate git bisect with a custom script
-                    // This script should return 0 if the current commit is good, and 1 if bad
-                    // For simplicity, using mvn verify and checking the exit status
+                    // automate git bisect with a script
+                    // script returns 0 if the current commit is good, and 1 if it's bad
                     sh """
                         git bisect run sh -c '
                         mvn clean verify
                         if [ $? -eq 0 ]; then
-                            exit 0  # Good commit
+                            exit 0  # good commit
                         else
-                            exit 1  # Bad commit
+                            exit 1  # bad commit
                         fi
                         '
                     """
 
-                    // End git bisect session
+                    // end git bisect session
                     sh 'git bisect reset'
                 }
             }
